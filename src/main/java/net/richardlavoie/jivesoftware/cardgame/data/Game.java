@@ -83,13 +83,15 @@ public class Game {
     }
 
     /**
-     * Find a player from it's id.
-     * @param playerId Id of the player
-     * @return Player found from it's id
+     * Find a player from a given matcher.
+     * @param matcher player matcher
+     * @return Player found from form the matcher predicate
      */
-    private Player findPlayer(String playerId) {
-        for (Player p : players) {
-            if (p .getId().equals(playerId)) {
+    public Player findPlayer(PlayerMatcher matcher) {
+        Iterator<Player> iter = players.iterator();
+        while (iter.hasNext()) {
+            Player p = iter.next();
+            if (matcher.test(p)) {
                 return p;
             }
         }
@@ -105,7 +107,7 @@ public class Game {
      * @throws PlayerNotFoundException If the player was not found
      */
     public List<Card> dealCardsTo(String playerId, int numCards) throws PlayerNotFoundException {
-        Player player = findPlayer(playerId);
+        Player player = findPlayer(new IdPlayerMatcher(playerId));
 
         if (player == null) {
             throw new PlayerNotFoundException(playerId);

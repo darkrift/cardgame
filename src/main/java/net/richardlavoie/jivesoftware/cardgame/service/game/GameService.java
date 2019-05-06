@@ -67,12 +67,7 @@ public class GameService {
     }
 
     private Player findPlayerFrom(Game game, String playerId) {
-        for (Player p : game.getPlayers()) {
-            if (p .getId().equals(playerId)) {
-                return p;
-            }
-        }
-        return null;
+        return game.findPlayer(new IdPlayerMatcher(playerId));
     }
 
     public Game getGame(String gameId) throws GameServiceException {
