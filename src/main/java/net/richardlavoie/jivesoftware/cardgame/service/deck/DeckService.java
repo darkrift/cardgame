@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Service responsible for deck operations.
+ */
 public class DeckService {
 
     private final Map<String, Deck> decks = new ConcurrentHashMap<>();

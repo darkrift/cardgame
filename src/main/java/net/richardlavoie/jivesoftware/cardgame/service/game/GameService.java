@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for game operations.
+ */
 public class GameService {
 
     // List of games available in the system

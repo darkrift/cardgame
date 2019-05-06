@@ -1,6 +1,9 @@
 package net.richardlavoie.jivesoftware.cardgame.service.deck.exception;
 
-public class DeckServiceException extends Exception {
+/**
+ * General exception for the deck service.
+ */
+public abstract class DeckServiceException extends Exception {
 
     private final String id;
 

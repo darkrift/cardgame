@@ -1,6 +1,6 @@
 package net.richardlavoie.jivesoftware.cardgame.service.game.exception;
 
-public class GameServiceException extends Exception {
+public abstract class GameServiceException extends Exception {
 
     private final String id;
 
