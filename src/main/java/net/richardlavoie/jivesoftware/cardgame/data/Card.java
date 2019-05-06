@@ -2,6 +2,9 @@ package net.richardlavoie.jivesoftware.cardgame.data;
 
 import java.util.Objects;
 
+/**
+ * This class represents a card. It holds a value from ace, 1, to king, 13 and the suit in which it belongs.
+ */
 public class Card {
 
     private final int value;

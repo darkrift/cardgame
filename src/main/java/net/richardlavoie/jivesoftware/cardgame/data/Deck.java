@@ -1,14 +1,12 @@
 package net.richardlavoie.jivesoftware.cardgame.data;
 
-import net.richardlavoie.jivesoftware.cardgame.data.visitor.DeckVisitor;
-import net.richardlavoie.jivesoftware.cardgame.random.RandomSource;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
+/**
+ * This class represents a deck of cards.
+ */
 public class Deck {
 
     private final String id;

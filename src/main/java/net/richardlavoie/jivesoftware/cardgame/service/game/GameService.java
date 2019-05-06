@@ -88,12 +88,8 @@ public class GameService {
 
     public List<Card> dealCards(String gameId, String playerId, int numCards) throws GameServiceException {
         Game game = findGame(gameId);
-        Player player = findPlayerFrom(game, playerId);
 
-        List<Card> cards = game.takeCards(numCards);
-        player.addCards(cards);
-
-        return cards;
+        return game.dealCardsTo(playerId, numCards);
     }
 
     public List<Player> getPlayers(String gameId) throws GameServiceException {

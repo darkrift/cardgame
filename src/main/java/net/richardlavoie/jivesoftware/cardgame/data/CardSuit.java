@@ -1,5 +1,8 @@
 package net.richardlavoie.jivesoftware.cardgame.data;
 
+/**
+ * This represents a card suit.
+ */
 public enum CardSuit {
 
     HEART(1),
