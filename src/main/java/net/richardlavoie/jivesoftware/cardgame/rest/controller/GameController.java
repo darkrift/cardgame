@@ -7,6 +7,7 @@ import net.richardlavoie.jivesoftware.cardgame.data.Player;
 import net.richardlavoie.jivesoftware.cardgame.random.JavaRandomSource;
 import net.richardlavoie.jivesoftware.cardgame.rest.controller.game.GameData;
 import net.richardlavoie.jivesoftware.cardgame.rest.controller.game.PlayerData;
+import net.richardlavoie.jivesoftware.cardgame.rest.controller.game.PlayerDataOutput;
 import net.richardlavoie.jivesoftware.cardgame.rest.controller.game.PlayerSummaryData;
 import net.richardlavoie.jivesoftware.cardgame.rest.visitor.CountUndealtCardsPerSuitVisitor;
 import net.richardlavoie.jivesoftware.cardgame.rest.visitor.UndealtCardsValuePerSuit;
@@ -79,14 +80,14 @@ public class GameController {
     }
 
     @PostMapping("/games/{gameId}/players")
-    public Player addPlayer(@PathVariable("gameId") String gameId, @RequestBody PlayerData data) throws GameServiceException {
+    public PlayerDataOutput addPlayer(@PathVariable("gameId") String gameId, @RequestBody PlayerData data) throws GameServiceException {
         // TODO Should we deal cards to this newly added player ?
-        return gameService.addPlayer(gameId, new Player(UUID.randomUUID().toString(), data.name));
+        return new PlayerDataOutput(gameService.addPlayer(gameId, new Player(UUID.randomUUID().toString(), data.name)));
     }
 
     @DeleteMapping("/games/{gameId}/players/{playerId}")
-    public Player removePlayer(@PathVariable("gameId") String gameId, @PathVariable("playerId") String playerId) throws GameServiceException {
-        return gameService.removePlayer(gameId, playerId);
+    public PlayerDataOutput removePlayer(@PathVariable("gameId") String gameId, @PathVariable("playerId") String playerId) throws GameServiceException {
+        return new PlayerDataOutput(gameService.removePlayer(gameId, playerId));
     }
 
     @GetMapping("/games/{gameId}/players/{playerId}/cards")
@@ -115,7 +116,7 @@ public class GameController {
     }
 
     @PostMapping("/games/{gameId}/shuffle")
-    public void shuffle(@PathVariable("gameId") String gameId) throws GameServiceException, DeckServiceException {
+    public void shuffle(@PathVariable("gameId") String gameId) throws GameServiceException {
         Game game = gameService.getGame(gameId);
 
         game.shuffleDeck(new JavaRandomSource());
