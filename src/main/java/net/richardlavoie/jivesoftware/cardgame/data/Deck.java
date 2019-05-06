@@ -13,6 +13,11 @@ public class Deck {
 
     private final List<Card> cards;
 
+    /**
+     * Create a new standard deck of cards.
+     *
+     * @param id Unique id of the deck
+     */
     public Deck(String id) {
         this.id = id;
         List<Card> newCards = new ArrayList<>();
@@ -28,7 +33,11 @@ public class Deck {
         return id;
     }
 
-
+    /**
+     * Returns the list of cards from this deck.
+     *
+     * @return List of cards
+     */
     public List<Card> getCards() {
         return Collections.unmodifiableList(this.cards);
     }

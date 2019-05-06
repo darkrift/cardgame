@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Class responsible for the /decks REST endpoint.
+ */
 @RestController
 public class DeckController {
 

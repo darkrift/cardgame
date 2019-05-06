@@ -70,6 +70,11 @@ public class GameDeck {
         }
     }
 
+    /**
+     * Traverse each card from the shoe and call the visitor with each of them.
+     *
+     * @param visitor Visitor which to call with each card from the shoe
+     */
     public void accept(DeckVisitor visitor) {
         synchronized (this) {
             for (Card d : cards) {

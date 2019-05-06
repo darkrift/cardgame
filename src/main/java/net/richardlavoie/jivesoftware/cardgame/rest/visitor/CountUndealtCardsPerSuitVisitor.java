@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Class which gathers the count data of undealt cards, with a pivot on the card suit.
+ */
 public class CountUndealtCardsPerSuitVisitor implements DeckVisitor {
 
     public static class SuitCardStatistic {

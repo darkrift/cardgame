@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Class responsible for the /games endpoint.
+ */
 @RestController
 public class GameController {
 

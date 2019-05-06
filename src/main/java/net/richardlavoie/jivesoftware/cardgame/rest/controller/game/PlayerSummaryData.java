@@ -1,5 +1,8 @@
 package net.richardlavoie.jivesoftware.cardgame.rest.controller.game;
 
+/**
+ * Class that represents the data for the total hand value of a player.
+ */
 public class PlayerSummaryData {
 
     public final String id;

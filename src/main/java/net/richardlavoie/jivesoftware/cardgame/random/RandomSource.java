@@ -5,6 +5,12 @@ package net.richardlavoie.jivesoftware.cardgame.random;
  */
 public interface RandomSource {
 
+    /**
+     * Get the next random int from the defined bound, exclusive.
+     *
+     * @param bound Bound in which to find the next int
+     * @return Random int
+     */
     int nextInt(int bound);
 
 }
