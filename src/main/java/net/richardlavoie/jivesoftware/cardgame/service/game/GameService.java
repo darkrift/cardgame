@@ -7,6 +7,7 @@ import net.richardlavoie.jivesoftware.cardgame.data.Player;
 import net.richardlavoie.jivesoftware.cardgame.service.game.exception.GameDeletionErrorException;
 import net.richardlavoie.jivesoftware.cardgame.service.game.exception.GameNotFoundException;
 import net.richardlavoie.jivesoftware.cardgame.service.game.exception.GameServiceException;
+import net.richardlavoie.jivesoftware.cardgame.service.game.exception.PlayerNotFoundException;
 import net.richardlavoie.jivesoftware.cardgame.service.game.exception.TooManyGamesFoundException;
 
 import java.util.ArrayList;
@@ -63,6 +64,11 @@ public class GameService {
     }
 
     private Player findPlayerFrom(Game game, String playerId) {
+        for (Player p : game.getPlayers()) {
+            if (p .getId().equals(playerId)) {
+                return p;
+            }
+        }
         return null;
     }
 
@@ -74,6 +80,9 @@ public class GameService {
         Game game = findGame(gameId);
         Player player = findPlayerFrom(game, playerId);
 
+        if (player == null) {
+            throw new PlayerNotFoundException(playerId);
+        }
         return player.getCards();
     }
 

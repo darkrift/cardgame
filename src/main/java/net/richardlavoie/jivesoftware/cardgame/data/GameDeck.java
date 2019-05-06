@@ -5,8 +5,9 @@ import net.richardlavoie.jivesoftware.cardgame.random.RandomSource;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a shoe in deck card games. It assumes that all decks in the shoe are
@@ -14,7 +15,7 @@ import java.util.List;
  */
 public class GameDeck {
 
-    public Deque<Deck> decks = new ArrayDeque<>();
+    public ArrayDeque<Card> cards = new ArrayDeque<>();
 
     /**
      * Pick the number of specified cards from the cards in the shoe.
@@ -23,32 +24,40 @@ public class GameDeck {
      * @return List of picked cards
      */
     public List<Card> pick(int num) {
-        Deck deck = decks.poll();
-        if (deck == null) {
-            return null;
-        }
-        List<Card> cards = new ArrayList<>();
-        for (int i = 0; i < num; i++) {
-            if (!deck.isEmpty()) {
-                cards.add(deck.pick());
-            } else {
-                decks.pop();
-                deck = decks.poll();
-                if (deck == null) {
-                    return cards;
+        List<Card> pickedCards = new ArrayList<>();
+        synchronized (this) {
+            for (int i = 0; i < num; i++) {
+                if (!this.cards.isEmpty()) {
+                    pickedCards.add(this.cards.pop());
+                } else {
+                    return pickedCards;
                 }
             }
         }
-        return cards;
+        return pickedCards;
     }
 
     /**
-     * Shuffle all the decks in the shoe.
+     * This methods shuffles all the deck of cards. It uses a modern version of Fisher-Yates for computer use
+     * by Richard Durstenfeld.
      */
     public void shuffle(RandomSource source) {
-        // Assumption: Deck of cards in shoe shouldn't mix together ...
-        decks.forEach(deck -> deck.shuffle(source));
+        synchronized(this) {
+            Card[] cards = this.cards.toArray(new Card[this.cards.size()]);
+            int size = cards.length;
+            for (int i = 0; i < size - 2; i++) {
+                int r = source.nextInt(size - i) + i;
+
+                if (r != i) {
+                    Card tmp = cards[i];
+                    cards[i] = cards[r];
+                    cards[r] = tmp;
+                }
+            }
+            this.cards = Arrays.stream(cards).collect(Collectors.toCollection(ArrayDeque::new));
+        }
     }
+
 
     /**
      * Add a deck to the shoe.
@@ -56,14 +65,16 @@ public class GameDeck {
      * @param deck Deck to add to the shoe
      */
     public void addDeck(Deck deck) {
-        synchronized (decks) {
-            decks.addLast(deck);
+        synchronized (this) {
+            cards.addAll(deck.getCards());
         }
     }
 
     public void accept(DeckVisitor visitor) {
-        for (Deck d : decks) {
-            d.accept(visitor);
+        synchronized (this) {
+            for (Card d : cards) {
+                visitor.visit(d);
+            }
         }
     }
 

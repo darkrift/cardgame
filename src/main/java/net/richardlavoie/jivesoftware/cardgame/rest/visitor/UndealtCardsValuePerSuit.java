@@ -32,7 +32,7 @@ public class UndealtCardsValuePerSuit implements DeckVisitor {
 
     @Override
     public void visit(Card card) {
-        Counter counter = cards.get(card.getSuit());
+        Counter counter = cards.get(card);
         if (counter == null) {
             counter = new Counter();
             cards.put(card, counter);

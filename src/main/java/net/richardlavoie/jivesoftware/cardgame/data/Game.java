@@ -24,7 +24,7 @@ public class Game {
         return id;
     }
 
-    public void addDeck(Deck deck) {
+    public void addDeckToShoe(Deck deck) {
         gameDeck.addDeck(deck);
     }
 
@@ -57,6 +57,7 @@ public class Game {
     }
 
     public void visitDeck(DeckVisitor visitor) {
+
         gameDeck.accept(visitor);
     }
 }

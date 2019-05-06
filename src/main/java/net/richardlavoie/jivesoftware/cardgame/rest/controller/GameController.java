@@ -29,59 +29,42 @@ import java.util.UUID;
 @RestController
 public class GameController {
 
-    private final GameService service;
+    private final GameService gameService;
 
     private final DeckService deckService;
 
 
     public GameController(GameService service, DeckService deckService) {
-        this.service = service;
+        this.gameService = service;
         this.deckService = deckService;
     }
 
     @PostMapping("/games")
     public String createGame() {
-        return service.createGame().getId();
+        return gameService.createGame().getId();
     }
 
     @GetMapping("/games")
     public List<Game> listGames() {
-        return service.getGames();
-    }
-
-    @DeleteMapping("/games/{id}")
-    public String deleteGame(@PathVariable String id) throws GameServiceException {
-        service.deleteGame(id);
-        return id;
-    }
-
-    @PostMapping("/games/{gameId}/players")
-    public Player addPlayer(@PathVariable("gameId") String gameId, @RequestBody PlayerData data) throws GameServiceException {
-        // TODO Should we deal cards to this newly added player ?
-        return service.addPlayer(gameId, new Player(UUID.randomUUID().toString(), data.name));
-    }
-
-    @DeleteMapping("/games/{gameId}/players/{playerId}")
-    public Player removePlayer(@PathVariable("gameId") String gameId, @PathVariable("playerId") String playerId) throws GameServiceException {
-        return service.removePlayer(gameId, playerId);
+        return gameService.getGames();
     }
 
     @GetMapping("/games/{id}")
     public GameData getGame(@PathVariable String id) throws GameServiceException {
-        Game game = service.getGame(id);
+        Game game = gameService.getGame(id);
         GameData gd = new GameData(game.getId());
         return gd;
     }
 
-
-    @GetMapping("/games/{gameId}/players/{playerId}/cards")
-    public List<Card> listCardsOfPlayer(@PathVariable("gameId") String gameId, @PathVariable("playerId") String playerId) throws GameServiceException {
-        return service.getCards(gameId, playerId);
+    @DeleteMapping("/games/{id}")
+    public String deleteGame(@PathVariable String id) throws GameServiceException {
+        gameService.deleteGame(id);
+        return id;
     }
 
     @GetMapping("/games/{gameId}/players")
     public List<PlayerSummaryData> listOfPlayers(@PathVariable("gameId") String gameId) throws GameServiceException {
-        List<Player> players = service.getPlayers(gameId);
+        List<Player> players = gameService.getPlayers(gameId);
         List<PlayerSummaryData> summary = new ArrayList<>();
         for (Player p : players) {
             int totalValue = p.getCards().stream().map(card -> card.getValue()).reduce(0, (sum, value) -> sum + value);
@@ -89,10 +72,26 @@ public class GameController {
         }
 
         summary.sort(
-            (PlayerSummaryData o1, PlayerSummaryData o2) -> Integer.compare(o2.value, o1.value)
+                (PlayerSummaryData o1, PlayerSummaryData o2) -> Integer.compare(o2.value, o1.value)
         );
 
         return summary;
+    }
+
+    @PostMapping("/games/{gameId}/players")
+    public Player addPlayer(@PathVariable("gameId") String gameId, @RequestBody PlayerData data) throws GameServiceException {
+        // TODO Should we deal cards to this newly added player ?
+        return gameService.addPlayer(gameId, new Player(UUID.randomUUID().toString(), data.name));
+    }
+
+    @DeleteMapping("/games/{gameId}/players/{playerId}")
+    public Player removePlayer(@PathVariable("gameId") String gameId, @PathVariable("playerId") String playerId) throws GameServiceException {
+        return gameService.removePlayer(gameId, playerId);
+    }
+
+    @GetMapping("/games/{gameId}/players/{playerId}/cards")
+    public List<Card> listCardsOfPlayer(@PathVariable("gameId") String gameId, @PathVariable("playerId") String playerId) throws GameServiceException {
+        return gameService.getCards(gameId, playerId);
     }
 
     @PostMapping("/games/{gameId}/players/{playerId}/dealCards")
@@ -102,22 +101,22 @@ public class GameController {
             @RequestParam(value = "numCards", defaultValue = "1") int numCards
     ) throws GameServiceException
     {
-        return service.dealCards(gameId, playerId, numCards);
+        return gameService.dealCards(gameId, playerId, numCards);
     }
 
     @PostMapping("/games/{gameId}/shoe")
-    public Deck addDeck(@PathVariable("gameId") String gameId, @RequestParam("deckId") String deckId) throws GameServiceException, DeckServiceException {
-        Game game = service.getGame(gameId);
-        Deck reservedDeck = deckService.reserveDeck(deckId);
+    public Deck addDeckToGame(@PathVariable("gameId") String gameId, @RequestParam("deckId") String deckId) throws GameServiceException, DeckServiceException {
+        Game game = gameService.getGame(gameId);
+        Deck deck = deckService.pickDeck(deckId);
 
-        game.addDeck(reservedDeck);
+        game.addDeckToShoe(deck);
 
-        return reservedDeck;
+        return deck;
     }
 
     @PostMapping("/games/{gameId}/shuffle")
-    public void shuffle(@PathVariable("gameId") String gameId, @RequestParam("deckId") String deckId) throws GameServiceException, DeckServiceException {
-        Game game = service.getGame(gameId);
+    public void shuffle(@PathVariable("gameId") String gameId) throws GameServiceException, DeckServiceException {
+        Game game = gameService.getGame(gameId);
 
         game.shuffleDeck(new JavaRandomSource());
     }
@@ -126,14 +125,14 @@ public class GameController {
     @GetMapping("/games/{gameId}/undealtCardsPerSuit")
     public List<CountUndealtCardsPerSuitVisitor.SuitCardStatistic> getCardsLeftPerSuit(@PathVariable("gameId") String gameId) throws GameServiceException {
         CountUndealtCardsPerSuitVisitor visitor = new CountUndealtCardsPerSuitVisitor();
-        service.getGame(gameId).visitDeck(visitor);
+        gameService.getGame(gameId).visitDeck(visitor);
         return visitor.computeStats();
     }
 
     @GetMapping("/games/{gameId}/undealtCardsValuePerSuit")
     public List<UndealtCardsValuePerSuit.CardsPerSuitData> getCardsLeftPerSuitAndValue(@PathVariable("gameId") String gameId) throws GameServiceException {
         UndealtCardsValuePerSuit visitor = new UndealtCardsValuePerSuit();
-        service.getGame(gameId).visitDeck(visitor);
+        gameService.getGame(gameId).visitDeck(visitor);
         return visitor.computeStats();
     }
 }
